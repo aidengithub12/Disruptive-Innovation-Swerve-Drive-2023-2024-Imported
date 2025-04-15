@@ -85,276 +85,277 @@ public class RobotContainer {
   public final Arm arm;
   public Rumble rumble;
   public Camera camera = new Camera();
-  public LEDS leds = new LEDS();
-
-  // Controller
-  private static final CommandXboxController controllerDriver = new CommandXboxController(0);
-  private final CommandXboxController controllerOperator = new CommandXboxController(1);
-  private RotationSource hijackableRotation = new Joystick();
-  // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser;
-  // private final LoggedDashboardNumber flywheelSpeedInput =
-  //   new LoggedDashboardNumber("Flywheel Speed", 1500.0);
-  // private DistanceEstimator limelight;
-
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-    switch (Constants.currentMode) {
-      case REAL:
-        // Real robot, instantiate hardware IO implementations
-        drive =
-            new Drive(
-                new GyroIONavX(),
-                new ModuleIOSparkMax(0),
-                new ModuleIOSparkMax(1),
-                new ModuleIOSparkMax(2),
-                new ModuleIOSparkMax(3));
-        indexer = new Indexer(new IndexerIOSparkMax());
-        intake = new Intake(new IntakeIOSparkMax());
-        shooter = new Shooter(new ShooterIOSparkMax());
-        arm = new Arm(new ArmIOSparkMax());
-        // camera = new Camera();
-        rumble = new Rumble();
-
-        // limelight = new DistanceEstimator();
-
-        // leds = new LEDS();
-        break;
-
-      case SIM:
-        // Sim robot, instantiate physics sim IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim());
-        indexer = new Indexer(new IndexerIOSim());
-        intake = new Intake(new IntakeIOSim());
-        shooter = new Shooter(new ShooterIOSim());
-        arm = new Arm(new ArmIOSim());
-        break;
-
-      default:
-        // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-        indexer = new Indexer(new IndexerIO() {});
-        intake = new Intake(new IntakeIO() {});
-        shooter = new Shooter(new ShooterIO() {});
-        arm = new Arm(new ArmIO() {});
-        break;
+  public static LEDS leds;
+    // Controller
+    private static final CommandXboxController controllerDriver = new CommandXboxController(0);
+    private final CommandXboxController controllerOperator = new CommandXboxController(1);
+    private RotationSource hijackableRotation = new Joystick();
+    // Dashboard inputs
+    private final LoggedDashboardChooser<Command> autoChooser;
+    // private final LoggedDashboardNumber flywheelSpeedInput =
+    //   new LoggedDashboardNumber("Flywheel Speed", 1500.0);
+    // private DistanceEstimator limelight;
+  
+    /** The container for the robot. Contains subsystems, OI devices, and commands. */
+    public RobotContainer() {
+      switch (Constants.currentMode) {
+        case REAL:
+          // Real robot, instantiate hardware IO implementations
+          drive =
+              new Drive(
+                  new GyroIONavX(),
+                  new ModuleIOSparkMax(0),
+                  new ModuleIOSparkMax(1),
+                  new ModuleIOSparkMax(2),
+                  new ModuleIOSparkMax(3));
+          indexer = new Indexer(new IndexerIOSparkMax());
+          intake = new Intake(new IntakeIOSparkMax());
+          shooter = new Shooter(new ShooterIOSparkMax());
+          arm = new Arm(new ArmIOSparkMax());
+          // camera = new Camera();
+          rumble = new Rumble();
+          leds = new LEDS(0,(frc.robot.Constants.LED_LENGTH + frc.robot.Constants.LED2Length));
+          // limelight = new DistanceEstimator();
+  
+          // leds = new LEDS();
+          break;
+  
+        case SIM:
+          // Sim robot, instantiate physics sim IO implementations
+          drive =
+              new Drive(
+                  new GyroIO() {},
+                  new ModuleIOSim(),
+                  new ModuleIOSim(),
+                  new ModuleIOSim(),
+                  new ModuleIOSim());
+          indexer = new Indexer(new IndexerIOSim());
+          intake = new Intake(new IntakeIOSim());
+          shooter = new Shooter(new ShooterIOSim());
+          arm = new Arm(new ArmIOSim());
+          leds = new LEDS(0,(frc.robot.Constants.LED_LENGTH + frc.robot.Constants.LED2Length));
+  
+          break;
+  
+        default:
+          // Replayed robot, disable IO implementations
+          drive =
+              new Drive(
+                  new GyroIO() {},
+                  new ModuleIO() {},
+                  new ModuleIO() {},
+                  new ModuleIO() {},
+                  new ModuleIO() {});
+          indexer = new Indexer(new IndexerIO() {});
+          intake = new Intake(new IntakeIO() {});
+          shooter = new Shooter(new ShooterIO() {});
+          arm = new Arm(new ArmIO() {});
+          leds = new LEDS(0,(frc.robot.Constants.LED_LENGTH + frc.robot.Constants.LED2Length));
+  
+          break;
+      }
+  
+      // Set up auto routines
+      // NamedCommands.registerCommand(
+      //  "Run Flywheel",
+      // Commands.startEnd(
+      //      () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
+      // .withTimeout(5.0));
+  
+      // NamedCommands.registerCommand(
+      //     "ShootNoteAmp",
+      //     (new ArmAngleAmp(arm)
+      //         .andThen(new ShootNoteAmp(indexer, shooter, 2500))
+      //         .andThen(new ArmAngleSpeaker(arm))));
+      // NamedCommands.registerCommand(
+      //     "ShootNoteSpeaker", (new ShootNoteSpeaker(indexer, shooter, 5400)));
+  
+      // NamedCommands.registerCommand("AcquireNote", new AcquireNote(indexer, intake, rumble));
+  
+      autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+      // autoChooser.addOption("4 note Center Auto", new PathPlannerAuto("4 note Center Auto"));
+      // autoChooser.addOption("3 note far", new PathPlannerAuto("3 note far"));
+      // autoChooser.addOption("Top Auto", new PathPlannerAuto("Top Auto"));
+      // Ideal Centered Auto
+  
+      // // Set up feedforward characterization
+      // autoChooser
+      // .addOption(
+      //     "Drive FF Characterization",
+      //     new FeedForwardCharacterization(
+      //         drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
+      // autoChooser.addOption("CenterBlue", new PathPlannerAuto("AllAutoCenterBlue"));
+      // autoChooser.addOption("LeftBlue", new PathPlannerAuto("AllAutoLeftBlue"));
+      // autoChooser.addOption("RightBlue", new PathPlannerAuto("AllAutoRightBlue"));
+      // autoChooser.addOption("AutoScoreLeft", new PathPlannerAuto("ScoreAutoLeft"));
+      // camera.useFrontCamera();
+  
+      // autoChooser.addOption(
+      //  "Flywheel FF Characterization",
+      // new FeedForwardCharacterization(
+      //  flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
+      // Configure the button bindings
+      configureButtonBindings();
     }
-
-    // Set up auto routines
-    // NamedCommands.registerCommand(
-    //  "Run Flywheel",
-    // Commands.startEnd(
-    //      () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
-    // .withTimeout(5.0));
-
-    NamedCommands.registerCommand(
-        "ShootNoteAmp",
-        (new ArmAngleAmp(arm)
-            .andThen(new ShootNoteAmp(indexer, shooter, 2500))
-            .andThen(new ArmAngleSpeaker(arm))));
-    NamedCommands.registerCommand(
-        "ShootNoteSpeaker", (new ShootNoteSpeaker(indexer, shooter, 5400)));
-
-    NamedCommands.registerCommand("AcquireNote", new AcquireNote(indexer, intake, rumble));
-
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-    autoChooser.addOption("4 note Center Auto", new PathPlannerAuto("4 note Center Auto"));
-    autoChooser.addOption("3 note far", new PathPlannerAuto("3 note far"));
-    autoChooser.addOption("Top Auto", new PathPlannerAuto("Top Auto"));
-
-    // Ideal Centered Auto
-
-    // // Set up feedforward characterization
-    // autoChooser
-    // .addOption(
-    //     "Drive FF Characterization",
-    //     new FeedForwardCharacterization(
-    //         drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
-    // autoChooser.addOption("CenterBlue", new PathPlannerAuto("AllAutoCenterBlue"));
-    // autoChooser.addOption("LeftBlue", new PathPlannerAuto("AllAutoLeftBlue"));
-    // autoChooser.addOption("RightBlue", new PathPlannerAuto("AllAutoRightBlue"));
-    // autoChooser.addOption("AutoScoreLeft", new PathPlannerAuto("ScoreAutoLeft"));
-    // camera.useFrontCamera();
-
-    leds.RunLEDS();
-    
-    // autoChooser.addOption(
-    //  "Flywheel FF Characterization",
-    // new FeedForwardCharacterization(
-    //  flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
-    
-    // Configure the button bindings
-    configureButtonBindings();
-  }
-
-  public static CommandXboxController getController() {
-    return controllerDriver;
-  }
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
-  private void configureButtonBindings() {
-
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -(controllerDriver.getLeftY()),
-            () -> -(controllerDriver.getLeftX()),
-            () -> (-controllerDriver.getRightX()),
-            () -> (-controllerDriver.getLeftTriggerAxis())));
-
-    //   () ->
-    //        (
-    /*controllerDriver.getRightX() hijackableRotation.getR(
-                 //       drive.getPose().getRotation().getDegrees())),
-               // () -> -(controllerDriver.getLeftTriggerAxis())));
-    */
-
-    shooter.setDefaultCommand(new ShooterIdle(shooter, 0));
-    intake.setDefaultCommand(new IntakeIdle(intake, 0));
-    indexer.setDefaultCommand(new IndexerIdle(indexer, 0));
-
-    // Driver Controls ********************************************************************
-    /* Left Stick - Translate
-     * Right Stick - Rotate
-     *
-     * Left Trigger - Turbo Drive Speed
-     * Left Bumper - Start Intake
-     *
-     * Right Trigger - Score Amp Command
-     * Right Bumper - Score Speaker Command
-     *
+  
+    public static CommandXboxController getController() {
+      return controllerDriver;
+    }
+    /**
+     * Use this method to define your button->command mappings. Buttons can be created by
+     * instantiating a {@link GenericHID} or one of its subclasses ({@link
+     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+     * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
-
-    controllerDriver
-        .povDown()
-        .whileTrue(new InstantCommand(() -> hijackableRotation = new AprilTagLock(getAprilTagId())))
-        .onFalse(new InstantCommand(() -> hijackableRotation = new Joystick()));
-    controllerDriver.leftBumper().onTrue(new AcquireNote(indexer, intake, rumble));
-    controllerDriver
-        .rightBumper()
-        .onTrue(new ArmAngleSpeaker(arm).andThen(new ShootNoteSpeaker(indexer, shooter, 5200)));
-    controllerDriver
-        .povUp()
-        .onTrue(
-            new ArmAngleSpeaker(arm)
-                .andThen(
-                    new InstantCommand(
-                        () -> hijackableRotation = new AprilTagLock(getAprilTagId()))));
-    controllerDriver
-        .rightTrigger()
-        .onTrue(
-            new ArmAngleAmp(arm)
-                .andThen(new ShootNoteAmp(indexer, shooter, 2500))
-                .andThen(new ArmAngleSpeaker(arm)));
-
-    controllerDriver.a().onTrue(new ArmSetAngle(arm, Constants.ANGLE_CLIMB_UP));
-    controllerDriver.x().onTrue(new ArmSetAngle(arm, Constants.ANGLE_CLIMB_DOWN));
-    // controllerDriver.povLeft().onTrue(new ZeroPosition(arm));
-    // Driver Gyro Reset
-    controllerDriver
-        .back()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(
-                                drive.getPose().getTranslation(),
-                                new Rotation2d(
-                                    (DriverStation.getAlliance().get() == Alliance.Red)
-                                        ? 3.14
-                                        : 0))),
-                    drive)
-                .ignoringDisable(true));
-
-    // Operator Controls ********************************************************************
-    /*
-        * a- reverse intake
-        * b- reverse indexer
-        * x- stop with x
-        *
-        *
-        * d-up- gradual arm up
-        * d-down - gradual arm down
-        *
-        *
-        *
-        * right trigger - run intake and indexer
-        * right bumper - run shoter rollers
-        *
-        * left trigger - arm down
-        * left bumper - arm up
-        *
-        * left little middle button - reset pose
-        *
-        *
-        *     // controllerDriver.leftBumber().whileTrue(Commands.run(() -> intake.runVelocity(2200)));
-    controllerDriver.povUp().onTrue(new ArmUpGradual(arm));
-       controllerDriver.povDown().onTrue(new ArmDownGradual(arm));
-        *
-        *
-        */
-    
-    // Reset pose, needs to be little left middle button
-    controllerOperator
-        .back()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(
-                                drive.getPose().getTranslation(),
-                                new Rotation2d(
-                                    (DriverStation.getAlliance().get() == Alliance.Red)
-                                        ? 3.14
-                                        : 0))),
-                    drive)
-                .ignoringDisable(true));
-
-    controllerOperator.povUp().onTrue(new ArmUpGradual(arm));
-    controllerOperator.povDown().onTrue(new ArmDownGradual(arm));
-
-    controllerOperator.a().whileTrue(Commands.run(() -> intake.runVelocity(-2200)));
-    controllerOperator.b().whileTrue(Commands.run(() -> indexer.runVelocity(-1500)));
-
-    controllerOperator.rightTrigger().whileTrue(new ManualGrabNote(intake, indexer, 2000));
-    controllerOperator.rightBumper().whileTrue(Commands.run(() -> shooter.runVelocity(5000)));
-    controllerOperator.leftTrigger().onTrue(new ArmAngleSpeaker(arm));
-    controllerOperator.leftBumper().onTrue(new ArmAngleAmp(arm));
-  }
-
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    return autoChooser.get();
-  }
-
-  public int getAprilTagId() {
-    if (DriverStation.getAlliance().get() == Alliance.Red) {
-      return frc.robot.Constants.RED_SPEAKER_ID;
+    private void configureButtonBindings() {
+      drive.setDefaultCommand(
+          DriveCommands.joystickDrive(
+              drive,
+              () -> -(controllerDriver.getLeftY()),
+              () -> -(controllerDriver.getLeftX()),
+              () -> (-controllerDriver.getRightX()),
+              () -> (-controllerDriver.getLeftTriggerAxis())));
+  
+      //   () ->
+      //        (
+      /*controllerDriver.getRightX() hijackableRotation.getR(
+                   //       drive.getPose().getRotation().getDegrees())),
+                 // () -> -(controllerDriver.getLeftTriggerAxis())));
+      */
+  
+      shooter.setDefaultCommand(new ShooterIdle(shooter, 0));
+      intake.setDefaultCommand(new IntakeIdle(intake, 0));
+      indexer.setDefaultCommand(new IndexerIdle(indexer, 0));
+  
+      // Driver Controls ********************************************************************
+      /* Left Stick - Translate
+       * Right Stick - Rotate
+       *
+       * Left Trigger - Turbo Drive Speed
+       * Left Bumper - Start Intake
+       *
+       * Right Trigger - Score Amp Command
+       * Right Bumper - Score Speaker Command
+       *
+       */
+  
+      controllerDriver
+          .povDown()
+          .whileTrue(new InstantCommand(() -> hijackableRotation = new AprilTagLock(getAprilTagId())))
+          .onFalse(new InstantCommand(() -> hijackableRotation = new Joystick()));
+      controllerDriver.leftBumper().onTrue(new AcquireNote(indexer, intake, rumble));
+      controllerDriver
+          .rightBumper()
+          .onTrue(new ArmAngleSpeaker(arm).andThen(new ShootNoteSpeaker(indexer, shooter, 5200)));
+      controllerDriver
+          .povUp()
+          .onTrue(
+              new ArmAngleSpeaker(arm)
+                  .andThen(
+                      new InstantCommand(
+                          () -> hijackableRotation = new AprilTagLock(getAprilTagId()))));
+      controllerDriver
+          .rightTrigger()
+          .onTrue(
+              new ArmAngleAmp(arm)
+                  .andThen(new ShootNoteAmp(indexer, shooter, 2500))
+                  .andThen(new ArmAngleSpeaker(arm)));
+  
+      controllerDriver.a().onTrue(new ArmSetAngle(arm, Constants.ANGLE_CLIMB_UP));
+      controllerDriver.x().onTrue(new ArmSetAngle(arm, Constants.ANGLE_CLIMB_DOWN));
+      // controllerDriver.povLeft().onTrue(new ZeroPosition(arm));
+      // Driver Gyro Reset
+      controllerDriver
+          .back()
+          .onTrue(
+              Commands.runOnce(
+                      () ->
+                          drive.setPose(
+                              new Pose2d(
+                                  drive.getPose().getTranslation(),
+                                  new Rotation2d(
+                                      (DriverStation.getAlliance().get() == Alliance.Red)
+                                          ? 3.14
+                                          : 0))),
+                      drive)
+                  .ignoringDisable(true));
+  
+      // Operator Controls ********************************************************************
+      /*
+          * a- reverse intake
+          * b- reverse indexer
+          * x- stop with x
+          *
+          *
+          * d-up- gradual arm up
+          * d-down - gradual arm down
+          *
+          *
+          *
+          * right trigger - run intake and indexer
+          * right bumper - run shoter rollers
+          *
+          * left trigger - arm down
+          * left bumper - arm up
+          *
+          * left little middle button - reset pose
+          *
+          *
+          *     // controllerDriver.leftBumber().whileTrue(Commands.run(() -> intake.runVelocity(2200)));
+      controllerDriver.povUp().onTrue(new ArmUpGradual(arm));
+         controllerDriver.povDown().onTrue(new ArmDownGradual(arm));
+          *
+          *
+          */
+      
+      // Reset pose, needs to be little left middle button
+      controllerOperator
+          .back()
+          .onTrue(
+              Commands.runOnce(
+                      () ->
+                          drive.setPose(
+                              new Pose2d(
+                                  drive.getPose().getTranslation(),
+                                  new Rotation2d(
+                                      (DriverStation.getAlliance().get() == Alliance.Red)
+                                          ? 3.14
+                                          : 0))),
+                      drive)
+                  .ignoringDisable(true));
+  
+      controllerOperator.povUp().onTrue(new ArmUpGradual(arm));
+      controllerOperator.povDown().onTrue(new ArmDownGradual(arm));
+  
+      controllerOperator.a().whileTrue(Commands.run(() -> intake.runVelocity(-2200)));
+      controllerOperator.b().whileTrue(Commands.run(() -> indexer.runVelocity(-1500)));
+  
+      controllerOperator.rightTrigger().whileTrue(new ManualGrabNote(intake, indexer, 2000));
+      controllerOperator.rightBumper().whileTrue(Commands.run(() -> shooter.runVelocity(5000)));
+      controllerOperator.leftTrigger().onTrue(new ArmAngleSpeaker(arm));
+      controllerOperator.leftBumper().onTrue(new ArmAngleAmp(arm));
     }
-    if (DriverStation.getAlliance().get() == Alliance.Blue) {
-      return frc.robot.Constants.BLUE_SPEAKER_ID;
-    } else {
-      return 0;
+  
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+      return autoChooser.get();
     }
+  
+    public int getAprilTagId() {
+      if (DriverStation.getAlliance().get() == Alliance.Red) {
+        return frc.robot.Constants.RED_SPEAKER_ID;
+      }
+      if (DriverStation.getAlliance().get() == Alliance.Blue) {
+        return frc.robot.Constants.BLUE_SPEAKER_ID;
+      } else {
+        return 0;
+      }
+    }
+    public static LEDS getLEDS() {
+      return leds;
   }
 }

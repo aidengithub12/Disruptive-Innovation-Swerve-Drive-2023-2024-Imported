@@ -33,7 +33,8 @@ public final class Constants {
   // public static final double ARM_GEAR_RATIO = 152;
   // ((11.0 / 28.0) * (1.0 / 40.0) * (36.0 / 54.0));
   public static final double TURN_GEAR_RATIO = 150.0 / 7.0;
-  public static final int LED_LENGTH = 43;
+  public static final int LED_LENGTH = 46;
+  public static final int LED2Length = 42;
   public static final int DRIVE_ENCODER_FL = 16;
   public static final int DRIVE_ENCODER_FR = 19;
   public static final int DRIVE_ENCODER_BL = 17;

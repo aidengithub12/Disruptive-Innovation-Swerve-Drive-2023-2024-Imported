@@ -4,14 +4,21 @@
 
 package frc.robot.subsystems.LEDS;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import java.awt.Color;
 
+import edu.wpi.first.units.TimeUnit;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Frequency;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 // import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.Arm.Arm;
 
@@ -22,21 +29,23 @@ public class LEDS {
   private static boolean isAuto = DriverStation.isAutonomous();
   private static boolean isTeleop = DriverStation.isTeleop();
 
-  public LEDS() {
-    leds = new AddressableLED(0);
-    buffer = new AddressableLEDBuffer(frc.robot.Constants.LED_LENGTH);
-    leds.setLength(frc.robot.Constants.LED_LENGTH);
+  public LEDS(int port, int length) {
+    leds = new AddressableLED(port);
+    buffer = new AddressableLEDBuffer(length);
+    leds.setLength(length);
     leds.setData(buffer);
     leds.start();
+    
+    
+
   }
 
   public void RunLEDS() {
+    isTeleop = DriverStation.isTeleop();
     if (DriverStation.isDisabled()) {
-      for (var i = 0; i < buffer.getLength(); i++) {
-        // Sets the specified LED to the HSV values for yellow
-        buffer.setHSV(i, 60, 100, 100);
-      }
-      System.out.println("set LEDs");
+      LEDPattern base = LEDPattern.gradient(GradientType.kDiscontinuous, edu.wpi.first.wpilibj.util.Color.kRed,edu.wpi.first.wpilibj.util.Color.kMagenta);
+      LEDPattern wave = base.blink(Seconds.of(0.2),Seconds.of(0.2));
+      wave.applyTo(buffer);
       leds.setData(buffer);
     }
     if (isAuto) {
@@ -48,16 +57,7 @@ public class LEDS {
       leds.setData(buffer);
     }
     if (isTeleop) {
-      for (var i = 0; i < buffer.getLength(); i++) {
-        // Sets the specified LED to the HSV values for some color
-        buffer.setHSV(i, 84, 8, 50);
-      }
-    if (DriverStation.getAlliance().get() == Alliance.Blue) {
-      LEDPattern blue = LEDPattern.solid(edu.wpi.first.wpilibj.util.Color.kBlue);
-      blue.applyTo(buffer);
-    }
-      System.out.println("set LEDs");
-      leds.setData(buffer);
+      
     }
     
     // example

@@ -14,11 +14,14 @@ public class Rumble extends SubsystemBase {
   XboxController controller2 = new XboxController(1);
 
   /** Creates a new Vibrator. */
-  public Rumble() {}
+  public Rumble() {
+    
+  }
 
   public void setVibration(double value, RumbleType type) {
     controller1.setRumble(type, value);
     controller2.setRumble(type, value);
+    
   }
 
   public void setVibration(double value) {
