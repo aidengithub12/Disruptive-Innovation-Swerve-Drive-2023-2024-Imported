@@ -23,7 +23,7 @@ public class LEDS {
   private static boolean isTeleop = DriverStation.isTeleop();
 
   public LEDS() {
-    leds = new AddressableLED(4);
+    leds = new AddressableLED(0);
     buffer = new AddressableLEDBuffer(frc.robot.Constants.LED_LENGTH);
     leds.setLength(frc.robot.Constants.LED_LENGTH);
     leds.setData(buffer);
