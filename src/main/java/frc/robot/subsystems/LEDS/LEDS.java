@@ -4,12 +4,16 @@
 
 package frc.robot.subsystems.LEDS;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Percent;
+import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 
 import java.awt.Color;
 
 import edu.wpi.first.units.TimeUnit;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Frequency;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
@@ -40,25 +44,22 @@ public class LEDS {
 
   }
 
-  public void RunLEDS() {
+  public void RunLEDS() { 
     isTeleop = DriverStation.isTeleop();
     if (DriverStation.isDisabled()) {
       LEDPattern base = LEDPattern.gradient(GradientType.kDiscontinuous, edu.wpi.first.wpilibj.util.Color.kRed,edu.wpi.first.wpilibj.util.Color.kMagenta);
-      LEDPattern wave = base.blink(Seconds.of(0.2),Seconds.of(0.2));
+      LEDPattern wave = base.breathe(Seconds.of(5));
       wave.applyTo(buffer);
       leds.setData(buffer);
     }
-    if (isAuto) {
-      for (var i = 0; i < buffer.getLength(); i++) {
-        // Sets the specified LED to the HSV values for red
-        buffer.setHSV(i, 0, 100, 50);
-      }
-      System.out.println("set LEDs");
+    if (DriverStation.isEnabled()) {
+      Distance ledSpacing = Meters.of(1/ 120);
+      LEDPattern base = LEDPattern.gradient(GradientType.kDiscontinuous, edu.wpi.first.wpilibj.util.Color.kRed,edu.wpi.first.wpilibj.util.Color.kAqua);
+      LEDPattern pattern = base.scrollAtRelativeSpeed(Percent.per(Second).of(25));
+      pattern.applyTo(buffer);
       leds.setData(buffer);
     }
-    if (isTeleop) {
-      
-    }
+    
     
     // example
     // for (var i = 0; i < buffer.getLength(); i++) {
