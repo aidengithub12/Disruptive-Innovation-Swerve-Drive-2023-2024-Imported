@@ -32,7 +32,8 @@ public class LEDS {
   private AddressableLEDBuffer buffer;
   private static boolean isAuto = DriverStation.isAutonomous();
   private static boolean isTeleop = DriverStation.isTeleop();
-
+  private edu.wpi.first.wpilibj.util.Color color1 = edu.wpi.first.wpilibj.util.Color.kRed;
+  private edu.wpi.first.wpilibj.util.Color color2 = edu.wpi.first.wpilibj.util.Color.kBlue;
   public LEDS(int port, int length) {
     leds = new AddressableLED(port);
     buffer = new AddressableLEDBuffer(length);
@@ -47,20 +48,27 @@ public class LEDS {
   public void RunLEDS() { 
     isTeleop = DriverStation.isTeleop();
     if (DriverStation.isDisabled()) {
-      LEDPattern base = LEDPattern.gradient(GradientType.kDiscontinuous, edu.wpi.first.wpilibj.util.Color.kRed,edu.wpi.first.wpilibj.util.Color.kBlack);
+      LEDPattern base = LEDPattern.gradient(GradientType.kDiscontinuous, color1,color2);
       LEDPattern wave = base.breathe(Seconds.of(5));
       wave.applyTo(buffer);
       leds.setData(buffer);
     }
     if (DriverStation.isEnabled()) {
       Distance ledSpacing = Meters.of(1/ 120);
-      LEDPattern base = LEDPattern.gradient(GradientType.kDiscontinuous, edu.wpi.first.wpilibj.util.Color.kBlack,edu.wpi.first.wpilibj.util.Color.kRed);
+      LEDPattern base = LEDPattern.gradient(GradientType.kDiscontinuous, color1, color2);
       LEDPattern pattern = base.scrollAtRelativeSpeed(Percent.per(Second).of(25));
       pattern.applyTo(buffer);
       leds.setData(buffer);
     }
     
-    
+    if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Blue) {
+      color1 = edu.wpi.first.wpilibj.util.Color.kAliceBlue;
+      color2 = edu.wpi.first.wpilibj.util.Color.kRed;
+    }
+    else if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
+      color1 = edu.wpi.first.wpilibj.util.Color.kRed;
+      color2 = edu.wpi.first.wpilibj.util.Color.kAliceBlue;
+    }
     // example
     // for (var i = 0; i < buffer.getLength(); i++) {
     //   // Sets the specified LED to the HSV values for red
