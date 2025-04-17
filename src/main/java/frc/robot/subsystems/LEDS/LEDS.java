@@ -47,14 +47,14 @@ public class LEDS {
   public void RunLEDS() { 
     isTeleop = DriverStation.isTeleop();
     if (DriverStation.isDisabled()) {
-      LEDPattern base = LEDPattern.gradient(GradientType.kDiscontinuous, edu.wpi.first.wpilibj.util.Color.kRed,edu.wpi.first.wpilibj.util.Color.kMagenta);
+      LEDPattern base = LEDPattern.gradient(GradientType.kDiscontinuous, edu.wpi.first.wpilibj.util.Color.kRed,edu.wpi.first.wpilibj.util.Color.kBlack);
       LEDPattern wave = base.breathe(Seconds.of(5));
       wave.applyTo(buffer);
       leds.setData(buffer);
     }
     if (DriverStation.isEnabled()) {
       Distance ledSpacing = Meters.of(1/ 120);
-      LEDPattern base = LEDPattern.gradient(GradientType.kDiscontinuous, edu.wpi.first.wpilibj.util.Color.kRed,edu.wpi.first.wpilibj.util.Color.kAqua);
+      LEDPattern base = LEDPattern.gradient(GradientType.kDiscontinuous, edu.wpi.first.wpilibj.util.Color.kBlack,edu.wpi.first.wpilibj.util.Color.kRed);
       LEDPattern pattern = base.scrollAtRelativeSpeed(Percent.per(Second).of(25));
       pattern.applyTo(buffer);
       leds.setData(buffer);
